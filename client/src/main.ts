@@ -23,6 +23,7 @@ import Carousel from 'primevue/carousel';
 import Checkbox from 'primevue/checkbox';
 import Galleria from 'primevue/galleria';
 import Avatar from 'primevue/avatar';
+import Calendar from 'primevue/calendar';
 
 import App from './App.vue'
 import router from './router'
@@ -47,6 +48,7 @@ app.component('Checkbox', Checkbox)
 app.component('Galleria', Galleria);
 app.component('Avatar', Avatar);
 app.component('Toast', Toast);
+app.component('Calendar', Calendar);
 app.use(ToastService);
 
 app.use(createPinia())

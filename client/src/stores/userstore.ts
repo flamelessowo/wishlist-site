@@ -4,6 +4,8 @@ import {
   SERVER_URI,
   AUTHORIZE_PATH,
   REGISTER_PATH,
+  USER_PROFILE_PATH,
+  VERIFY_TOKEN_PATH,
 } from "@/core/constants";
 import axios, { type AxiosResponse } from "axios";
 
@@ -16,6 +18,11 @@ export const useUserStore = defineStore("users", {
   state: () => ({
     username: "",
     password: "",
+    email: "",
+    date_joined: null,
+    first_name: "",
+    last_name: "",
+    photo: "",
     accessToken: "",
     refreshToken: "",
   }),
@@ -56,7 +63,30 @@ export const useUserStore = defineStore("users", {
       this.refreshToken = "";
       this.accessToken = "";
     },
-    async loginUser(user: UserI): Promise<boolean> {
+
+    async getUserAndProfile(username: string) {
+      try {
+        const response = await axios.get(`${SERVER_URI}${USER_PROFILE_PATH}${username}`);
+        const user = response.data;
+        this.email = user.email;
+        this.date_joined = user.date_joined;
+        this.first_name = user.first_name;
+        this.last_name = user.last_name;
+
+        console.log(response);
+      } catch(err: any) {
+
+      }
+
+    },
+    async verifyToken(accessToken: string): Promise<boolean> {
+        const response = await axios.post(`${SERVER_URI}${VERIFY_TOKEN_PATH}`, {}, {headers: {Authorization: `Bearer ${accessToken}`}});
+        if (response.status = 200) {
+          return true;
+        }
+        return false;
+    },
+    async loginUser(user: UserI): Promise<AxiosResponse> {
       try {
         const response = await axios.post(`${SERVER_URI}${AUTHORIZE_PATH}`, {
           username: user.username,
@@ -68,9 +98,9 @@ export const useUserStore = defineStore("users", {
           LOCALSTORAGE_AUTH_KEY,
           JSON.stringify({ ...this.getTokens, ...this.getUser })
         );
-        return true;
-      } catch (err) {
-        return false;
+        return response;
+      } catch (err: any) {
+        throw new Error(err.response.data.message);
       }
     },
     async registerUser(user: UserI): Promise<AxiosResponse> {
@@ -89,6 +119,11 @@ export const useUserStore = defineStore("users", {
     logout(): void {
       this.username = "";
       this.password = "";
+      this.email = "";
+      this.date_joined = null;
+      this.first_name = "";
+      this.last_name = "";
+      this.photo = "";
       this.accessToken = "";
       this.refreshToken = "";
       localStorage.removeItem(LOCALSTORAGE_AUTH_KEY);

@@ -2,14 +2,26 @@
 import { ref } from 'vue';
 import { getToastService } from '@/core/toast';
 import { useToast } from 'primevue/usetoast';
+import { useUserStore } from '@/stores/userstore';
+import { useRouter } from 'vue-router';
 
 const username = ref('');
 const password = ref('');
-const remember = ref(false);
 const toast = getToastService(useToast());
+const userstore = useUserStore();
+const router = useRouter();
 
 async function onSubmit() {
-
+    try {
+        const uname = username.value;
+        await userstore.loginUser({ username: username.value, password: password.value });
+        await userstore.getUserAndProfile(uname);
+        toast.success(`Successfully authorized as user: ${uname}`);
+        toast.info('Redirected to the main page');
+        router.push('/');
+    } catch(err: any) {
+        toast.error('Wrong username or password', 'Please check your data');
+    }
 }
 
 </script>
@@ -38,10 +50,6 @@ async function onSubmit() {
                             </Password>
 
                             <div class="flex align-items-center justify-content-between mb-5 gap-5">
-                                <div class="flex align-items-center">
-                                    <Checkbox v-model="remember" id="rememberme1" binary class="mr-2"></Checkbox>
-                                    <label for="rememberme1">Remember me</label>
-                                </div>
                                 <router-link to="/register" class="font-medium no-underline ml-2 text-right cursor-pointer"
                                     style="color: var(--primary-color)">No account? Create here</router-link>
                             </div>
