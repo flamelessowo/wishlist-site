@@ -12,6 +12,7 @@ import Toast from 'primevue/toast';
 import Menubar from 'primevue/menubar';
 import Password from 'primevue/password';
 import Menu from 'primevue/menu';
+import Textarea from 'primevue/textarea';
 import TabMenu from 'primevue/tabmenu';
 import InputText from 'primevue/inputtext';
 import FileUpload from 'primevue/fileupload';
@@ -24,6 +25,7 @@ import Checkbox from 'primevue/checkbox';
 import Galleria from 'primevue/galleria';
 import Avatar from 'primevue/avatar';
 import Calendar from 'primevue/calendar';
+import Image from 'primevue/image';
 
 import App from './App.vue'
 import router from './router'
@@ -37,6 +39,7 @@ app.component('MenuBar', Menubar);
 app.component('Password', Password);
 app.component('Menu', Menu);
 app.component('TabMenu', TabMenu);
+app.component('Textarea', Textarea);
 app.component('InputText', InputText);
 app.component('FileUpload', FileUpload);
 app.component('Button', Button);
@@ -49,6 +52,7 @@ app.component('Galleria', Galleria);
 app.component('Avatar', Avatar);
 app.component('Toast', Toast);
 app.component('Calendar', Calendar);
+app.component('Image', Image);
 app.use(ToastService);
 
 app.use(createPinia())

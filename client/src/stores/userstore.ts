@@ -20,6 +20,8 @@ export const useUserStore = defineStore("users", {
     password: "",
     email: "",
     date_joined: null,
+    birth_date: null,
+    description: "",
     first_name: "",
     last_name: "",
     photo: "",
@@ -68,10 +70,14 @@ export const useUserStore = defineStore("users", {
       try {
         const response = await axios.get(`${SERVER_URI}${USER_PROFILE_PATH}${username}`);
         const user = response.data;
+        this.username = user.username;
+        this.birth_date = user.birth_date;
         this.email = user.email;
         this.date_joined = user.date_joined;
         this.first_name = user.first_name;
         this.last_name = user.last_name;
+        this.description = user.description;
+        this.photo = SERVER_URI + user.photo.substring(1);
 
         console.log(response);
       } catch(err: any) {

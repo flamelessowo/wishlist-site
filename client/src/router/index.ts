@@ -4,6 +4,7 @@ import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import Error from '@/views/Error.vue'
 import Profile from '@/views/Profile.vue'
+import ProfileEdit from '@/views/ProfileEdit.vue'
 import { useUserStore } from '@/stores/userstore'
 
 import { LOCALSTORAGE_AUTH_KEY } from '@/core/constants'
@@ -27,15 +28,20 @@ const router = createRouter({
       component: Register
     },
     {
+      path: '/profile/:user',
+      name: 'profile',
+      component: Profile
+    },
+    {
+      path: '/profile/:user/edit',
+      name: 'profile-edit',
+      component: ProfileEdit
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'pagenotfound',
       component: Error
     },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: Profile
-    }
   ]
 })
 

@@ -7,7 +7,6 @@ import FooterBar from './components/FooterBar.vue';
 <template>
   <NavBar/>
   <RouterView/>
-  <FooterBar/>
   <Toast/>
 </template>
 

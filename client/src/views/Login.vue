@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { getToastService } from '@/core/toast';
 import { useToast } from 'primevue/usetoast';
 import { useUserStore } from '@/stores/userstore';
@@ -24,6 +24,13 @@ async function onSubmit() {
     }
 }
 
+onMounted(() => {
+    if (userstore.isAuthenticated) {
+        toast.info('Already authorized');
+        router.push('/');
+    }
+})
+
 </script>
 
 <template>
@@ -34,7 +41,7 @@ async function onSubmit() {
                     style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                     <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
                         <div class="text-center mb-5">
-                            <img src="user.png" alt="Image" height="50" class="mb-3" />
+                            <img src="/user.png" alt="Image" height="50" class="mb-3" />
                             <div class="text-900 text-3xl font-medium mb-3">Welcome Guest!</div>
                             <span class="text-600 font-medium">Sign in to continue</span>
                         </div>

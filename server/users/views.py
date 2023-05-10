@@ -25,6 +25,11 @@ def detail_user_view(request: Request, username: str):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+@decorators.api_view(['PUT'])
+def update_user_view(request: Request, username: str):
+    print(request)
+
+
 @decorators.api_view(['POST'])
 def create_user_view(request):
     try:

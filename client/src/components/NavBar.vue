@@ -20,7 +20,7 @@ const items = ref([
             <template #start>
         <img
           alt="logo"
-          src="wishlist.png"
+          src="/wishlist.png"
           height="30"
           class="mr-2"
         />

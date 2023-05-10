@@ -1,5 +1,4 @@
-<script setup>
-import AppConfig from '@/layout/AppConfig.vue';
+<script setup lang="ts">
 </script>
 
 <template>
