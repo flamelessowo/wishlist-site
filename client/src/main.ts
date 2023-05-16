@@ -26,6 +26,9 @@ import Galleria from 'primevue/galleria';
 import Avatar from 'primevue/avatar';
 import Calendar from 'primevue/calendar';
 import Image from 'primevue/image';
+import Toolbar from 'primevue/toolbar';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 import App from './App.vue'
 import router from './router'
@@ -53,6 +56,9 @@ app.component('Avatar', Avatar);
 app.component('Toast', Toast);
 app.component('Calendar', Calendar);
 app.component('Image', Image);
+app.component('Toolbar', Toolbar);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
 app.use(ToastService);
 
 app.use(createPinia())

@@ -25,9 +25,23 @@ def detail_user_view(request: Request, username: str):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+@decorators.api_view(['POST'])
+def upload_image(request: Request, username: str):
+    print(request)
+
+
 @decorators.api_view(['PUT'])
 def update_user_view(request: Request, username: str):
-    print(request)
+    user = User.objects.get(username=username)
+    profile = Profile.objects.get(owner=user.id)
+    user.first_name = request.data['name']
+    user.last_name = request.data['surname']
+    profile.birth_date = request.data['birthDate']
+    user.email = request.data['email']
+    profile.description = request.data['description']
+    user.save()
+    profile.save()
+    return Response(status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['POST'])

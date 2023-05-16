@@ -12,7 +12,6 @@ interface UserEditI {
 
 import { useUserStore } from '@/stores/userstore';
 import { onMounted, ref } from 'vue';
-import { post, get } from '@/core/httpservice';
 import { SERVER_URI, USER_PROFILE_PATH } from '@/core/constants';
 import { useRoute, useRouter } from 'vue-router';
 import { getToastService } from '@/core/toast';
@@ -48,11 +47,20 @@ function onUpload(event: any) {
     fr.readAsArrayBuffer(file)
 }
 
-function onSubmit() {
-    axios.put(`${SERVER_URI}${USER_PROFILE_PATH}/${userstore.username}/edit`, {
+async function onSubmit() {
+    try {
+        await axios.put(`${SERVER_URI}${USER_PROFILE_PATH}${userstore.username}/edit`, {
+        name: user.value.name,
+        surname: user.value.surname,
+        birthDate: new Date(user.value.birthDate).toISOString().split('T')[0],
+        email: user.value.email,
+        description: user.value.description})
+        toast.success('Successfully updated profile');
+        router.push({name: 'profile', params: {user: userstore.username}})
 
-    }, { headers: { 'Content-Type': 'multipart-form-data' }})
+    } catch(err: any) {
 
+    }
 }
 
 </script>
