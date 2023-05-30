@@ -3,21 +3,23 @@ import { ref } from "vue";
 import UserMenu from "@/components/UserMenu.vue"
 
 const items = ref([
-    {
-        label: 'Home',
-        icon: 'pi pi-fw pi-home',
-        to: '/'
-    },
-    {
-        label: 'Wish lists',
-        icon: 'pi pi-fw pi-list',
-    },
+  {
+    label: 'Home',
+    icon: 'pi pi-fw pi-home',
+    to: '/'
+  },
+  {
+    label: 'Wish lists',
+    icon: 'pi pi-fw pi-list',
+    to: {name: 'wishlists'}
+
+  },
 ]);
 </script>
 <template>
-    <div class="card">
-        <MenuBar :model="items" >
-            <template #start>
+  <div class="card">
+    <MenuBar :model="items" >
+      <template #start>
         <img
           alt="logo"
           src="/wishlist.png"
@@ -29,7 +31,7 @@ const items = ref([
         <!-- <InputText placeholder="Search" type="text" /> -->
         <UserMenu style="position: relative;"/>
       </template>
-        </MenuBar>
-    </div>
+    </MenuBar>
+  </div>
 </template>
 <style scoped></style>

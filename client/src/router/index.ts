@@ -8,7 +8,8 @@ import ProfileEdit from '@/views/ProfileEdit.vue'
 import { useUserStore } from '@/stores/userstore'
 
 import { LOCALSTORAGE_AUTH_KEY } from '@/core/constants'
-import Wishlist from '@/views/Wishlist.vue'
+import Wishlists from '@/views/Wishlists.vue'
+import WishView from '@/views/WishView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,7 +42,12 @@ const router = createRouter({
     {
       path: '/wishlists',
       name: 'wishlists',
-      component: Wishlist
+      component: Wishlists
+    },
+    {
+      path: '/:username/wishlist/:wishlistslug',
+      name: 'wishview',
+      component: WishView
     },
     {
       path: '/:pathMatch(.*)*',

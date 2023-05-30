@@ -16,8 +16,6 @@ const toast = getToastService(useToast());
 onMounted(async () => {
   try {
       user.value = (await get(USER_PROFILE_PATH + route.params.user)).data;
-      console.log(user.value.username, userstore.username)
-      console.log(user.value)
   } catch(err: any) {
     toast.error('This profile may not exist', 'Profile not found!');
     router.push('/');

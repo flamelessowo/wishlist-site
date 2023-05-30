@@ -27,7 +27,14 @@ def detail_user_view(request: Request, username: str):
 
 @decorators.api_view(['POST'])
 def upload_image(request: Request, username: str):
-    print(request)
+    image = request.FILES['image']
+    user = User.objects.get(username=username)
+    profile = Profile.objects.get(owner=user.id)
+
+    profile.photo = image
+    profile.save()
+
+    return Response(status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['PUT'])

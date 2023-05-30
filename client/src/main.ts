@@ -28,7 +28,12 @@ import Calendar from 'primevue/calendar';
 import Image from 'primevue/image';
 import Toolbar from 'primevue/toolbar';
 import DataTable from 'primevue/datatable';
+import DataView from 'primevue/dataview';
 import Column from 'primevue/column';
+import Rating from 'primevue/rating';
+import Dialog from 'primevue/dialog';
+import ConfirmPopup from 'primevue/confirmpopup';
+import ConfirmationService from 'primevue/confirmationservice';
 
 import App from './App.vue'
 import router from './router'
@@ -58,9 +63,13 @@ app.component('Calendar', Calendar);
 app.component('Image', Image);
 app.component('Toolbar', Toolbar);
 app.component('DataTable', DataTable);
+app.component('DataView', DataView);
 app.component('Column', Column);
+app.component('Rating', Rating);
+app.component('Dialog', Dialog);
+app.component('ConfirmPopup', ConfirmPopup)
 app.use(ToastService);
-
+app.use(ConfirmationService);
 app.use(createPinia())
 app.use(router)
 
