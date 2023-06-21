@@ -1,9 +1,12 @@
+import requests
+from bs4 import BeautifulSoup
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import generics, decorators, status
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.views.decorators.csrf import csrf_exempt
 
 from wishes.serializers import WishListSerializer, WishSerializer
 
@@ -61,4 +64,38 @@ def create_edit_user_wishlist(request: Request, username: str) -> Response:
 def delete_wishlist(request: Request, slug):
     wishlist = WishList.objects.get(slug=slug)
     wishlist.delete()
+    return Response(status=status.HTTP_200_OK)
+
+
+@decorators.api_view(['PUT'])
+def set_wish_bought(request: Request):
+    wish = Wish.objects.get(pk=request.data["id"])
+    wish.bought = request.data["bought"]
+    wish.save()
+    return Response(status=status.HTTP_200_OK)
+
+
+@decorators.api_view(['DELETE'])
+def delete_wish(request: Request, id: str):
+    Wish.objects.get(pk=id).delete()
+    return Response(status=status.HTTP_200_OK)
+
+
+@csrf_exempt
+@decorators.api_view(['POST'])
+def fetch_rozetka(request: Request):
+    wishlist_id = request.data['wishlist_id']
+    response = requests.get(request.data['uri'])
+    html_content = response.text
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    image = soup.select_one('.picture-container__picture').get_attribute_list("src")[0]
+    title = soup.select_one('.product__title').getText().strip()
+    price = soup.select_one('.product-price__big').getText()
+    description = soup.select_one('.product-about__description-content').getText()
+    link = request.data['uri']
+
+    wish_serializer = WishSerializer(data={"link": link, "image_link": image, "name": title, "price": price[:-1], "description": description, "wish_list": wishlist_id})
+    wish_serializer.is_valid(raise_exception=True)
+    wish_serializer.save()
     return Response(status=status.HTTP_200_OK)

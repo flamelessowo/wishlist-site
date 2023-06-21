@@ -27,7 +27,7 @@ class Wish(models.Model):
     image_link = models.CharField(max_length=1000, null=True, blank=True)
     price = models.DecimalField(decimal_places=2, max_digits=20, blank=True)
     quantity = models.PositiveIntegerField(default=1, null=False, blank=True)
-    description = models.CharField(max_length=500, null=True, blank=True)
+    description = models.CharField(max_length=50000, null=True, blank=True)
     bought = models.BooleanField(default=False, blank=True)
 
     def __str__(self):

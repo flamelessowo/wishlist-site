@@ -34,6 +34,8 @@ import Rating from 'primevue/rating';
 import Dialog from 'primevue/dialog';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
+import Listbox from 'primevue/listbox';
+import AvatarGroup from 'primevue/avatargroup';
 
 import App from './App.vue'
 import router from './router'
@@ -67,7 +69,9 @@ app.component('DataView', DataView);
 app.component('Column', Column);
 app.component('Rating', Rating);
 app.component('Dialog', Dialog);
-app.component('ConfirmPopup', ConfirmPopup)
+app.component('ConfirmPopup', ConfirmPopup);
+app.component('Listbox', Listbox);
+app.component('AvatarGroup', AvatarGroup);
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(createPinia())
