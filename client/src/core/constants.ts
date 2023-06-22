@@ -1,6 +1,6 @@
 export const LOCALSTORAGE_AUTH_KEY = 'auth'
 
-export const SERVER_URI = 'http://localhost:8000/'
+export const SERVER_URI = 'http://13.51.85.150:8000/'
 export const AUTHORIZE_PATH = 'users/token/obtain/'
 export const REFRESH_TOKEN = 'users/token/refresh/'
 export const REGISTER_PATH = 'users/user/create/'
