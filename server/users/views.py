@@ -13,6 +13,11 @@ class UserView(generics.ListAPIView):
     serializer_class = UserSerializer
 
 
+class ProfileView(generics.ListAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSeriazlier
+
+
 @decorators.api_view(['GET'])
 def detail_user_view(request: Request, username: str):
     try:

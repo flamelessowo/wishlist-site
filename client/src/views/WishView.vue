@@ -17,12 +17,15 @@ const toast = getToastService(useToast());
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-const dialogVisible = ref(false)
+const dialogVisible = ref(false);
+const usersDialogVisible = ref(false);
 const fetchUrl = ref('');
 const visible = ref(false);
 
 const user = ref('')
 const users = ref([])
+const profiles = ref([])
+const sharedUsers = ref([])
 
 
 async function getWishes() {
@@ -33,6 +36,26 @@ async function getWishes() {
   const response = await axios.get(`${SERVER_URI}${WISH_PATH}${route.params.wishlistslug}`);
   wishlist.value = response.data.wishlist
   wishes.value = response.data.wishes
+}
+
+async function getUsers() {
+  const response = await axios.get(`${SERVER_URI}users/all`);
+  const usersToPush = [];
+  response.data.forEach(el => usersToPush.push({name: el.username, code: el.id}))
+  users.value = usersToPush;
+}
+
+async function getProfiles() {
+  const response = await axios.get(`${SERVER_URI}users/profiles`);
+  profiles.value = response.data;
+}
+
+function getSharedUsers() {
+    sharedUsers.value = wishlist.value.shared_with.map(id => {
+    const profile = profiles.value.find(el => el.id === id);
+    const user = users.value.find(el => el.code === profile.owner);
+    return {username: user.name, id: user.code, profile_id: profile.id, photo: profile.photo}
+  })
 }
 
 const explode = () => {
@@ -47,18 +70,46 @@ async function fetchRozetka() {
   await getWishes();
 }
 
+function filterUsers() {
+  users.value = users.value.filter(el => !sharedUsers.value.map(el => el.id).includes(el.code) && !(userStore.username === el.name))
+}
+
+async function reload() {
+  await getWishes();
+  await getProfiles();
+  await getUsers();
+  getSharedUsers();
+  filterUsers();
+
+}
+
 onMounted(async () => {
-    if (!userStore.isAuthenticated) {
+  if (!userStore.isAuthenticated) {
     toast.error('Authorize to see wishlists');
     router.push({name: 'auth'})
   }
-  await getWishes();
+  await reload();
 });
+
+async function removeUserFromList(profile_id, list_id) {
+  await axios.delete(`${SERVER_URI}api/wishlists/remove/${profile_id}/${list_id}`);
+  await reload();
+  toast.success('Removed user from list')
+}
+
+async function addToUserList() {
+  const profile_id = profiles.value.find(el => el.owner === user.value.code).id;
+  await axios.post(`${SERVER_URI}api/wishlists/add/${profile_id}/${wishlist.value.id}`)
+  await reload();
+  toast.success('Successfully shared list with user');
+
+}
 
 const onRowExpand = (event) => {
 };
 const onRowCollapse = (event) => {
 };
+
 const expandAll = () => {
     expandedRows.value = wishes.value.filter((p) => p.id);
 };
@@ -90,14 +141,7 @@ function redirectToRozetka(link) {
         @rowExpand="onRowExpand" @rowCollapse="onRowCollapse" tableStyle="min-width: 60rem">
     <template #header>
         <div style="position: relative;" class="flex flex-wrap justify-content-end gap-2">
-        <AvatarGroup>
-    <Avatar image="/images/avatar/amyelsner.png" size="large" shape="circle" />
-    <Avatar image="/images/avatar/asiyajavayant.png" size="large" shape="circle" />
-    <Avatar image="/images/avatar/onyamalimba.png" size="large" shape="circle" />
-    <Avatar image="/images/avatar/ionibowcher.png" size="large" shape="circle" />
-    <Avatar image="/images/avatar/xuxuefeng.png" size="large" shape="circle" />
-    <Avatar label="+2" shape="circle" size="large" style="background-color: '#9c27b0', color: '#ffffff'" />
-</AvatarGroup>
+          <Avatar v-if="userStore.username === route.params.username" @click="usersDialogVisible = !usersDialogVisible" shape="circle" icon="pi pi-user" class="mr-2" size="large" />
             <Button text icon="pi pi-plus" label="Expand All" @click="expandAll" />
             <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
         </div>
@@ -128,17 +172,34 @@ function redirectToRozetka(link) {
     <template #expansion="slotProps">
       <div class="p-3">
         <Button @click="redirectToRozetka(slotProps.data.link)" label="Link to buy" link />
-        <Button label="Delete" severity="danger" @click="deleteWish(slotProps.data.id)"/>
+        <Button v-if="userStore.username === route.params.username" label="Delete" severity="danger" @click="deleteWish(slotProps.data.id)"/>
       </div>
     </template>
   </DataTable>
-  <Button label="Add wish" @click="dialogVisible = !dialogVisible" size="large" class="add-button" icon="pi pi-plus" severity="success" rounded aria-label="Search" />
+  <Button v-if="userStore.username === route.params.username" label="Add wish" @click="dialogVisible = !dialogVisible" size="large" class="add-button" icon="pi pi-plus" severity="success" rounded aria-label="Search" />
   <Dialog v-model:visible="dialogVisible" modal :style="{ width: '50vw' }">
     <div style="display: flex; flex-direction: column;">
       <InputText @keyup.enter="fetchRozetka" class="field" placeholder="Rozetka Item URL" type="text" v-model="fetchUrl" />
     </div>
   </Dialog>
- </template>
+  <Dialog v-model:visible="usersDialogVisible" modal :style="{ width: '50vw' }">
+    <div class="flex justify-content-start">
+      <Chip v-for="user in sharedUsers" @remove="removeUserFromList(user.profile_id, wishlist.id)" :key="user.id" :label="user.username" :image="user.photo" removable />
+    </div>
+    <h1 class="flex justify-content-center">Add Users</h1>
+    <div style="display: flex; flex-direction: column;">
+      <div class="card flex justify-content-center">
+        <Listbox @change="addToUserList" v-model="user" :options="users" filter optionLabel="name" class="w-full md:w-30rem">
+          <template #option="slotProps">
+            <div class="flex align-items-center">
+              <div>{{ slotProps.option.name }}</div>
+            </div>
+          </template>
+        </Listbox>
+      </div>
+    </div>
+  </Dialog>
+</template>
 <style>
 .add-button {
   position: absolute;

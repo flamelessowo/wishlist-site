@@ -36,6 +36,7 @@ import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
 import Listbox from 'primevue/listbox';
 import AvatarGroup from 'primevue/avatargroup';
+import Chip from 'primevue/chip';
 
 import App from './App.vue'
 import router from './router'
@@ -72,6 +73,7 @@ app.component('Dialog', Dialog);
 app.component('ConfirmPopup', ConfirmPopup);
 app.component('Listbox', Listbox);
 app.component('AvatarGroup', AvatarGroup);
+app.component('Chip', Chip);
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(createPinia())

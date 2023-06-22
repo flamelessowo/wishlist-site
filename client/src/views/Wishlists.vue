@@ -12,6 +12,7 @@ const userStore = useUserStore();
 const chosenObj = ref({} as any);
 const toast = getToastService(useToast());
 const router = useRouter();
+const shareVisible = ref(false);
 
 function enterEditMode(obj: any) {
   chosenObj.value = obj;
@@ -30,9 +31,19 @@ async function getWishLists() {
   wishes.value = wishLists.data.reverse();
 }
 
+async function getSharedWishLists() {
+  const wishLists = await axios.get(`${SERVER_URI}api/wishlists/get_shared_wishlists/${userStore.username}`);
+  sharedWishLists.value= wishLists.data;
+  console.log(sharedWishLists.value)
+}
+
 async function redirectToWish(slug) {
   router.push({name: 'wishview', params: {username: userStore.username, wishlistslug: slug}})
 
+}
+
+function redirectToOtherWishlist(wlslug, username) {
+  router.push({name: 'wishview', params: {username, wishlistslug: wlslug}});
 }
 
 onMounted(async () => {
@@ -41,11 +52,13 @@ onMounted(async () => {
     router.push({name: 'auth'})
   }
   await getWishLists();
+  await getSharedWishLists();
 });
 
 const wishes = ref([]);
 const dialogVisible = ref(false);
 const wishListMode = ref('Add')
+const sharedWishLists = ref([])
 
 async function deleteWishlist(slug: any) {
   await axios.delete(`${SERVER_URI}${WISHLISTS_D_PATH}${slug}`);
@@ -89,8 +102,15 @@ async function deleteWishlist(slug: any) {
     Oops nothing here....
   </div>
   <Button label="Add wishlist" @click="enterAddMode" size="large" class="add-button" icon="pi pi-plus" severity="success" rounded aria-label="Search" />
+  <Button style="margin-right: 185px;" label="Shared with me" @click="shareVisible = !shareVisible" size="large" class="add-button" icon="pi pi-heart" severity="" rounded aria-label="Search" />
   <Dialog v-model:visible="dialogVisible" modal :style="{ width: '50vw' }">
     <WishlistCU @reload="getWishLists()" :name="chosenObj.name" :description="chosenObj.description" :slug="chosenObj.slug" :mode="wishListMode"/>
+  </Dialog>
+  <Dialog v-model:visible="shareVisible" modal :style="{ width: '50vw' }">
+    <Card v-for="el in sharedWishLists" @click="redirectToOtherWishlist(el.slug, el.username)" :key="el.id">
+      <template #title> {{ el.name }} </template>
+      <template #content> {{ `Author: ${el.username}` }} </template>
+    </Card>
   </Dialog>
 </template>
 <style scoped>

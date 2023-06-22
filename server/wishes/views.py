@@ -5,10 +5,12 @@ from rest_framework.request import Request
 from rest_framework import generics, decorators, status
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from users.models import Profile
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 
 from wishes.serializers import WishListSerializer, WishSerializer
+from users.serializers import UserSerializer
 
 from .models import Wish, WishList
 
@@ -21,6 +23,15 @@ class WishListView(generics.ListAPIView):
 class WishView(generics.ListAPIView):
     queryset = Wish.objects.all()
     serializer_class = WishSerializer
+
+
+@decorators.api_view(['GET'])
+def get_shared_wishlists(request: Request, username: str):
+    user = User.objects.get(username=username)
+    profile = Profile.objects.get(owner=user.id)
+    wishlists = WishList.objects.filter(shared_with__in=[profile.id])
+    wishlist_serializer = WishListSerializer(wishlists, many=True)
+    return Response(wishlist_serializer.data, status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['GET'])
@@ -78,6 +89,19 @@ def set_wish_bought(request: Request):
 @decorators.api_view(['DELETE'])
 def delete_wish(request: Request, id: str):
     Wish.objects.get(pk=id).delete()
+    return Response(status=status.HTTP_200_OK)
+
+
+@decorators.api_view(['DELETE'])
+def remove_user_from_list(request: Request, profile_id: str, list_id: str):
+    WishList.objects.get(pk=list_id).shared_with.remove(profile_id)
+    return Response(status=status.HTTP_200_OK)
+
+
+@decorators.api_view(['POST'])
+def add_user_to_list(request: Request, profile_id: str, list_id: str):
+    profile = Profile.objects.get(pk=profile_id)
+    WishList.objects.get(pk=list_id).shared_with.add(profile)
     return Response(status=status.HTTP_200_OK)
 
 
